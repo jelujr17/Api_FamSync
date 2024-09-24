@@ -84,7 +84,7 @@ router.post('/create', function (req, res) {
 
 
 
-    connection.query('INSERT INTO perfil SET ?', { UsuarioId, Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil }, function (err) {
+    connection.query('INSERT INTO perfiles SET ?', { UsuarioId, Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil }, function (err) {
         if (err) {
             console.error('Error al crear el perfil: ', err);
             res.status(500).send({ message: err + 'Error al crear el perfil ' });
@@ -152,7 +152,7 @@ router.post('/delete', function (req, res) {
 // Configurar multer para manejar la carga de archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'C:\\Users\\Administrador\\Documents\\Imagenes_Smart_Family\\Perfiles\\');
+        cb(null, 'C:\\Users\\mario\\Documents\\Imagenes_Smart_Family\\Perfiles\\');
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname); // Utilizar el nombre original del archivo
