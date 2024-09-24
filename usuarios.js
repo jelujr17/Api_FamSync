@@ -26,7 +26,6 @@ router.get('/get', function (req, resp) {
         }
     });
 });
-
 // Obtener usuario por correo
 router.get('/getByCorreo', function (req, resp) {
     const correo = req.query.correo; // Cambiar a req.query.correo
@@ -54,6 +53,7 @@ router.get('/getByCorreo', function (req, resp) {
         }
     });
 });
+
 
 // Obtener usuario por teléfono
 router.get('/getByTelefono', function (req, resp) {
