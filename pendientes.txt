@@ -3,3 +3,5 @@ Usuarios:
     -Borrar Usuario
     -Crear Usuario
 
+Perfiles:
+    -Al editar un perfil los campos deben de aparecer completos con los valores anteriores

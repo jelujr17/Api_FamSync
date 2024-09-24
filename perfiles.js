@@ -50,7 +50,7 @@ router.get('/getByUsuario', function (req, resp) {
 
 // Obtener perfil por Id
 router.get('/getById', function (req, resp) {
-    const Id = req.query.id; // Cambiar a req.query.id
+    const Id = req.query.Id; // Cambiar a req.query.id
     connection.query('SELECT * FROM perfiles WHERE Id = ?', [Id], function (err, usuario) {
         if (err) {
             console.log('Error en /getById ' + err);
@@ -177,7 +177,7 @@ router.post('/receiveFile', (req, res) => {
     const fileName = req.body.fileName; // Obtener el nombre del archivo desde la solicitud
 
     // Ruta completa del directorio de uploads
-    const uploadsDirectory = 'C:\\Users\\Administrador\\Documents\\Imagenes_Smart_Family\\Perfiles\\';
+    const uploadsDirectory = 'C:\\Users\\mario\\Documents\\Imagenes_Smart_Family\\Perfiles\\';
 
     // Ruta completa del archivo a buscar
     const filePath = path.join(uploadsDirectory, fileName);
@@ -186,7 +186,7 @@ router.post('/receiveFile', (req, res) => {
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
             // Si el archivo no existe, devolver un error
-            res.status(404).json({ error: 'El archivo no existe' });
+            res.status(404).json({ error: 'El archivo no existe' +filePath});
             return;
         }
 
