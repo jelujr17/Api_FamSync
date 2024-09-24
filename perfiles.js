@@ -3,6 +3,9 @@ const router = express.Router();
 const mysql = require('mysql');
 var bp = require('body-parser');
 const crypto = require('node:crypto');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 // Configure SQL connection
 const connection = mysql.createConnection({
@@ -110,7 +113,7 @@ router.post('/update', function (req, res) {
 
     // Insertar los datos del producto en la base de datos
     connection.query('UPDATE perfiles SET  Nombre = ?, FotoPerfil = ?, Pin = ?, FechaNacimiento = ?, Infantil = ? WHERE Id = ?',
-        [ Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil , Id
+        [Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil, Id
         ], function (err) {
             if (err) {
                 // Manejar errores en caso de que la inserción falle
@@ -130,7 +133,7 @@ router.post('/delete', function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
     const perfilId = req.body.Id;
 
-    
+
     connection.query(
         'DELETE FROM perfiles WHERE Id = ?', [perfilId],
         function (err) {
@@ -145,4 +148,50 @@ router.post('/delete', function (req, res) {
     );
 });
 
+
+// Configurar multer para manejar la carga de archivos
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'C:\\Users\\Administrador\\Documents\\Imagenes_Smart_Family\\Perfiles\\');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname); // Utilizar el nombre original del archivo
+    }
+});
+const upload = multer({ storage: storage });
+
+// Ruta para cargar una imagen
+router.post('/uploadImagen', upload.single('imagen'), (req, res) => {
+    if (!req.file) {
+        // Si no se proporciona ninguna imagen, devuelve un error
+        res.status(400).json({ error: 'No se proporcionó ninguna imagen' });
+        return;
+    }
+
+    // Devuelve la URL de la imagen cargada
+    const imageUrl = path.basename(req.file.path);
+    res.status(200).json({ imageUrl: imageUrl });
+});
+
+router.post('/receiveFile', (req, res) => {
+    const fileName = req.body.fileName; // Obtener el nombre del archivo desde la solicitud
+
+    // Ruta completa del directorio de uploads
+    const uploadsDirectory = 'C:\\Users\\Administrador\\Documents\\Imagenes_Smart_Family\\Perfiles\\';
+
+    // Ruta completa del archivo a buscar
+    const filePath = path.join(uploadsDirectory, fileName);
+
+    // Verificar si el archivo existe
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            // Si el archivo no existe, devolver un error
+            res.status(404).json({ error: 'El archivo no existe' });
+            return;
+        }
+
+        // Si el archivo existe, enviarlo como respuesta
+        res.sendFile(filePath);
+    });
+});
 module.exports = router;
