@@ -10,6 +10,7 @@ const port = 3000;
 app.use(express.json());
 
 const usuariosRouter = require('./usuarios');
+const perfilesRouter = require('./perfiles');
 
 // Configuración de la base de datos
 const db = mysql.createConnection({
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 
 // Use routers
 app.use('/usuarios', usuariosRouter);
+app.use('/perfiles', perfilesRouter);
 
 
 db.connect((err) => {
