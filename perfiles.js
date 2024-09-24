@@ -96,37 +96,52 @@ router.post('/create', function (req, res) {
 });
 
 
-//Modificar Perfil
-router.post('/update', function (req, res) {
+// Modificar Perfil
+router.post('/update', async function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    let { Id, UsuarioId, Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil } = req.body;
-
-
+    let { Id, UsuarioId, Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil, fotoAnterior } = req.body;
 
     // Verificar que todos los campos requeridos estén presentes
     if (!Nombre || !Pin || !FechaNacimiento) {
         console.log('Argumentos incompletos para editar un perfil!');
-        res.status(400).json({ error: ('Consulta incompleta para editar un perfil') });
+        res.status(400).json({ error: 'Consulta incompleta para editar un perfil' });
         return;
     }
 
+    // Si se proporciona una nueva foto, eliminar la foto anterior
+    if (FotoPerfil) {
+        await eliminarFotoAnterior(fotoAnterior);
+    }
 
-    // Insertar los datos del producto en la base de datos
-    connection.query('UPDATE perfiles SET  Nombre = ?, FotoPerfil = ?, Pin = ?, FechaNacimiento = ?, Infantil = ? WHERE Id = ?',
-        [Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil, Id
-        ], function (err) {
+    // Actualizar el perfil en la base de datos
+    connection.query(
+        'UPDATE perfiles SET Nombre = ?, FotoPerfil = ?, Pin = ?, FechaNacimiento = ?, Infantil = ? WHERE Id = ?',
+        [Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil, Id],
+        function (err) {
             if (err) {
-                // Manejar errores en caso de que la inserción falle
                 console.error('Error al editar un perfil: ', err);
-                res.status(500).send({ message: err + 'Error al editar el perfil' });
+                res.status(500).send({ message: err + ' Error al editar el perfil' });
             } else {
-                // Confirmar que el producto se ha creado correctamente
                 console.log('Perfil editado correctamente');
                 res.status(200).send({ message: 'Bien' });
             }
-        });
+        }
+    );
 });
 
+// Función para eliminar la foto anterior
+async function eliminarFotoAnterior(fotoAnterior) {
+    // Aquí deberías definir la ruta completa de la imagen anterior
+    const filePath = path.join('C:\\Users\\mario\\Documents\\Imagenes_Smart_Family\\Perfiles\\', fotoAnterior);
+
+    // Intentar eliminar la imagen
+    try {
+        await fs.promises.unlink(filePath); // Usa unlink para eliminar el archivo
+        console.log('Foto anterior eliminada correctamente');
+    } catch (err) {
+        console.error('Error al eliminar la foto anterior: ', err);
+    }
+}
 
 //Eliminar producto por Id
 router.post('/delete', function (req, res) {
@@ -194,4 +209,6 @@ router.post('/receiveFile', (req, res) => {
         res.sendFile(filePath);
     });
 });
+
+
 module.exports = router;
