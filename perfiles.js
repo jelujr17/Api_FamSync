@@ -99,7 +99,7 @@ router.post('/create', function (req, res) {
 // Modificar Perfil
 router.post('/update', async function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    let { Id, UsuarioId, Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil, fotoAnterior } = req.body;
+    let { Id, Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil } = req.body;
 
     // Verificar que todos los campos requeridos estén presentes
     if (!Nombre || !Pin || !FechaNacimiento) {
@@ -108,11 +108,7 @@ router.post('/update', async function (req, res) {
         return;
     }
 
-    // Si se proporciona una nueva foto, eliminar la foto anterior
-    if (FotoPerfil) {
-        await eliminarFotoAnterior(fotoAnterior);
-    }
-
+  
     // Actualizar el perfil en la base de datos
     connection.query(
         'UPDATE perfiles SET Nombre = ?, FotoPerfil = ?, Pin = ?, FechaNacimiento = ?, Infantil = ? WHERE Id = ?',
@@ -129,19 +125,6 @@ router.post('/update', async function (req, res) {
     );
 });
 
-// Función para eliminar la foto anterior
-async function eliminarFotoAnterior(fotoAnterior) {
-    // Aquí deberías definir la ruta completa de la imagen anterior
-    const filePath = path.join('C:\\Users\\mario\\Documents\\Imagenes_Smart_Family\\Perfiles\\', fotoAnterior);
-
-    // Intentar eliminar la imagen
-    try {
-        await fs.promises.unlink(filePath); // Usa unlink para eliminar el archivo
-        console.log('Foto anterior eliminada correctamente');
-    } catch (err) {
-        console.error('Error al eliminar la foto anterior: ', err);
-    }
-}
 
 //Eliminar producto por Id
 router.post('/delete', function (req, res) {
