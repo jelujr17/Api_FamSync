@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
     host: '172.27.147.244', // Cambia esto si tu base de datos está en un servidor remoto
     user: 'root',           // Tu usuario de MySQL
     password: 'root',       // La contraseña de tu MySQL
-    database: 'smart_family' // El nombre de tu base de datos
+    database: 'famsync' // El nombre de tu base de datos
 });
 
 // Obtener todos los perfiles
@@ -150,7 +150,7 @@ router.post('/delete', function (req, res) {
 // Configurar multer para manejar la carga de archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'C:\\Users\\mario\\Documents\\Imagenes_Smart_Family\\Perfiles\\');
+        cb(null, 'C:\\Users\\mario\\Documents\\Imagenes_FamSync\\Perfiles\\');
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname); // Utilizar el nombre original del archivo
@@ -175,7 +175,7 @@ router.post('/receiveFile', (req, res) => {
     const fileName = req.body.fileName; // Obtener el nombre del archivo desde la solicitud
 
     // Ruta completa del directorio de uploads
-    const uploadsDirectory = 'C:\\Users\\mario\\Documents\\Imagenes_Smart_Family\\Perfiles\\';
+    const uploadsDirectory = 'C:\\Users\\mario\\Documents\\Imagenes_FamSync\\Perfiles\\';
 
     // Ruta completa del archivo a buscar
     const filePath = path.join(uploadsDirectory, fileName);

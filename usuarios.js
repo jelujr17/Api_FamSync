@@ -9,7 +9,7 @@ const connection = mysql.createConnection({
     host: '172.27.147.244', // Cambia esto si tu base de datos está en un servidor remoto
     user: 'root',           // Tu usuario de MySQL
     password: 'root',       // La contraseña de tu MySQL
-    database: 'smart_family' // El nombre de tu base de datos
+    database: 'famsync' // El nombre de tu base de datos
 });
 
 // Obtener todos los usuarios
