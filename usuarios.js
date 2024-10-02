@@ -6,7 +6,7 @@ const crypto = require('node:crypto');
 
 // Configure SQL connection
 const connection = mysql.createConnection({
-    host: '172.27.147.244', // Cambia esto si tu base de datos está en un servidor remoto
+    host: '172.27.147.244', //172.27.147.244 Cambia esto si tu base de datos está en un servidor remoto
     user: 'root',           // Tu usuario de MySQL
     password: 'root',       // La contraseña de tu MySQL
     database: 'famsync' // El nombre de tu base de datos

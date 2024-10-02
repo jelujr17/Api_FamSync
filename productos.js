@@ -15,62 +15,54 @@ const connection = mysql.createConnection({
     database: 'famsync' // El nombre de tu base de datos
 });
 
-// Obtener todos los perfiles
-router.get('/get', function (req, resp) {
-    connection.query('SELECT * FROM perfiles', function (err, rows) {
-        if (err) {
-            console.log('Error en /get ' + err);
-            resp.status(500);
-            resp.send({ message: "Error al obtener los perfiles" });
-        } else {
-            console.log('/get');
-            resp.status(200);
-            resp.send(rows);
-        }
-    });
-});
 
-// Obtener todos los perfiles por usuario
+
+// Obtener todos los productos por usuario
 router.get('/getByUsuario', function (req, resp) {
-    const UsuarioId = req.query.UsuarioId; // Cambiar a req.query.id
+    const IdUsuarioCreador = req.query.IdUsuarioCreador;
+    const IdPerfil = rew.query.IdPerfil;
 
-    connection.query('SELECT * FROM perfiles  WHERE UsuarioId = ?', [UsuarioId], function (err, rows) {
-
-        if (err) {
-            console.log('Error en /get ' + err);
-            resp.status(500);
-            resp.send({ message: "Error al obtener los perfiles" });
-        } else {
-            console.log('/getByUsuario');
-            resp.status(200);
-            resp.send(rows);
-        }
-    });
+    connection.query(
+        'SELECT * FROM productos WHERE IdUsuarioCreador = ? AND FIND_IN_SET(?, Visible)',
+        [IdUsuarioCreador, numeroVisible],
+        function (err, rows) {
+            if (err) {
+                console.log('Error en /get ' + err);
+                resp.status(500);
+                resp.send({ message: "Error al obtener los productos" });
+            } else {
+                console.log('/getProductos');
+                resp.status(200);
+                resp.send(rows);
+            }
+        });
 });
 
-// Obtener perfil por Id
+// Obtener producto por Id
 router.get('/getById', function (req, resp) {
     const Id = req.query.Id; // Cambiar a req.query.id
-    connection.query('SELECT * FROM perfiles WHERE Id = ?', [Id], function (err, usuario) {
+    connection.query('SELECT * FROM productos WHERE Id = ?', [Id], function (err, producto) {
         if (err) {
             console.log('Error en /getById ' + err);
             resp.status(500).send({ success: false, message: 'Error al obtener el perfil por Id' });
         } else {
-            if (usuario.length === 0) {
+            if (producto.length === 0) {
                 resp.status(404).send({ success: false, message: 'Perfil no encontrado por Id' });
             } else {
                 const args = {
-                    Id: usuario[0].Id,
-                    UsuarioId: usuario[0].UsuarioId,
-                    Nombre: usuario[0].Nombre,
-                    FotoPerfil: usuario[0].FotoPerfil,
-                    Pin: usuario[0].Pin,
-                    FechaNacimiento: usuario[0].FechaNacimiento,
-                    Infantil: usuario[0].Infantil,
+                    Id: producto[0].Id,
+                    Nombre: producto[0].Nombre,
+                    Imagenes: producto[0].Imagenes,
+                    Tienda: producto[0].Tienda,
+                    IdSustituto: producto[0].IdSustituto,
+                    Precio: producto[0].Precio,
+                    IdPerfilCreador: producto[0].IdPerfilCreador,
+                    IdUsuarioCreador: producto[0].IdUsuarioCreador,
+                    Visible: producto[0].Visible,
                 };
                 resp.status(200).send({
                     success: true,
-                    message: 'Perfil obtenido correctamente mediante Id',
+                    message: 'Producto obtenido correctamente mediante Id',
                     arguments: args,
                 });
             }
@@ -78,47 +70,40 @@ router.get('/getById', function (req, resp) {
     });
 });
 
-//Crear Perfil
+//Crear producto
 router.post('/create', function (req, res) {
-    let { UsuarioId, Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil } = req.body;
+    let { Nombre, Imagenes, Tienda, IdSustituto, Precio, IdPerfilCreador, IdUsuarioCreador, Visible } = req.body;
 
 
 
-    connection.query('INSERT INTO perfiles SET ?', { UsuarioId, Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil }, function (err) {
+    connection.query('INSERT INTO productos SET ?', { Nombre, Imagenes, Tienda, IdSustituto, Precio, IdPerfilCreador, IdUsuarioCreador, Visible }, function (err) {
         if (err) {
-            console.error('Error al crear el perfil: ', err);
-            res.status(500).send({ message: err + 'Error al crear el perfil ' });
+            console.error('Error al crear el producto: ', err);
+            res.status(500).send({ message: err + 'Error al crear el producto ' });
         } else {
-            console.log('Perfil creado correctamente');
+            console.log('Producto creado correctamente');
             res.status(200).send({ message: 'Bien' });
         }
     });
 });
 
 
-// Modificar Perfil
+// Modificar Producto
 router.post('/update', async function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    let { Id, Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil } = req.body;
+    let { Id, Nombre, Imagenes, Tienda, IdSustituto, Precio, Visible } = req.body;
 
-    // Verificar que todos los campos requeridos estén presentes
-    if (!Nombre || !Pin || !FechaNacimiento) {
-        console.log('Argumentos incompletos para editar un perfil!');
-        res.status(400).json({ error: 'Consulta incompleta para editar un perfil' });
-        return;
-    }
 
-  
     // Actualizar el perfil en la base de datos
     connection.query(
-        'UPDATE perfiles SET Nombre = ?, FotoPerfil = ?, Pin = ?, FechaNacimiento = ?, Infantil = ? WHERE Id = ?',
-        [Nombre, FotoPerfil, Pin, FechaNacimiento, Infantil, Id],
+        'UPDATE productos SET Nombre = ?, Imagenes = ?, Tienda = ?, IdSustituto = ?, Precio = ? Visible = ? WHERE Id = ?',
+        [Nombre, Imagenes, Tienda, IdSustituto, Precio, Visible, Id],
         function (err) {
             if (err) {
-                console.error('Error al editar un perfil: ', err);
-                res.status(500).send({ message: err + ' Error al editar el perfil' });
+                console.error('Error al editar un producto: ', err);
+                res.status(500).send({ message: err + ' Error al editar el producto' });
             } else {
-                console.log('Perfil editado correctamente');
+                console.log('Producto editado correctamente');
                 res.status(200).send({ message: 'Bien' });
             }
         }
@@ -129,17 +114,16 @@ router.post('/update', async function (req, res) {
 //Eliminar producto por Id
 router.post('/delete', function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    const perfilId = req.body.Id;
-
+    const Id = req.body.Id;
 
     connection.query(
-        'DELETE FROM perfiles WHERE Id = ?', [perfilId],
+        'DELETE FROM productos WHERE Id = ?', [Id],
         function (err) {
             if (err) {
-                console.error('Error al eliminar un perfil: ', err);
+                console.error('Error al eliminar un producto: ', err);
                 res.status(500).send({ success: false });
             } else {
-                console.log('Perfil eliminado correctamente');
+                console.log('Producto eliminado correctamente');
                 res.status(200).send({ success: true });
             }
         }
@@ -150,7 +134,7 @@ router.post('/delete', function (req, res) {
 // Configurar multer para manejar la carga de archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'C:\\Users\\mario\\Documents\\Imagenes_FamSync\\Perfiles\\');
+        cb(null, 'C:\\Users\\mario\\Documents\\Imagenes_FamSync\\Productos\\');
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname); // Utilizar el nombre original del archivo
@@ -175,7 +159,7 @@ router.post('/receiveFile', (req, res) => {
     const fileName = req.body.fileName; // Obtener el nombre del archivo desde la solicitud
 
     // Ruta completa del directorio de uploads
-    const uploadsDirectory = 'C:\\Users\\mario\\Documents\\Imagenes_FamSync\\Perfiles\\';
+    const uploadsDirectory = 'C:\\Users\\mario\\Documents\\Imagenes_FamSync\\Productos\\';
 
     // Ruta completa del archivo a buscar
     const filePath = path.join(uploadsDirectory, fileName);
@@ -184,7 +168,7 @@ router.post('/receiveFile', (req, res) => {
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
             // Si el archivo no existe, devolver un error
-            res.status(404).json({ error: 'El archivo no existe' +filePath});
+            res.status(404).json({ error: 'El archivo no existe' + filePath });
             return;
         }
 
