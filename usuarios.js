@@ -3,10 +3,12 @@ const router = express.Router();
 const mysql = require('mysql');
 var bp = require('body-parser');
 const crypto = require('node:crypto');
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // Puedes ajustar el número de rondas de sal a tu preferencia
 
 // Configure SQL connection
 const connection = mysql.createConnection({
-    host: '172.27.147.244', //172.27.147.244 Cambia esto si tu base de datos está en un servidor remoto
+    host: '172.27.188.12', //172.27.147.244 Cambia esto si tu base de datos está en un servidor remoto
     user: 'root',           // Tu usuario de MySQL
     password: 'root',       // La contraseña de tu MySQL
     database: 'famsync' // El nombre de tu base de datos
@@ -110,5 +112,117 @@ router.get('/getById', function (req, resp) {
         }
     });
 });
+
+router.post('/create', function (req, resp) {
+    const { Telefono, Correo, Nombre, Password } = req.body;
+
+    if (!Telefono || !Correo || !Nombre || !Password) {
+        return resp.status(400).send({
+            success: false,
+            message: 'Todos los campos (Telefono, Correo, Nombre, Password) son obligatorios',
+        });
+    }
+
+    // Verificar si el correo o teléfono ya están registrados
+    connection.query('SELECT * FROM usuarios WHERE Correo = ? OR Telefono = ?', [Correo, Telefono], function (err, usuarioExistente) {
+        if (err) {
+            console.log('Error al verificar usuario existente: ' + err);
+            return resp.status(500).send({
+                success: false,
+                message: 'Error al verificar si el usuario ya está registrado',
+            });
+        }
+
+        if (usuarioExistente.length > 0) {
+            return resp.status(409).send({
+                success: false,
+                message: 'El correo o el teléfono ya están registrados',
+            });
+        } else {
+            // Encriptar la contraseña usando bcrypt
+            bcrypt.hash(Password, saltRounds, function (err, hashedPassword) {
+                if (err) {
+                    console.log('Error al encriptar la contraseña: ' + err);
+                    return resp.status(500).send({
+                        success: false,
+                        message: 'Error al encriptar la contraseña',
+                    });
+                }
+
+                // Insertar el nuevo usuario con la contraseña encriptada
+                connection.query(
+                    'INSERT INTO usuarios (Telefono, Correo, Nombre, Password) VALUES (?, ?, ?, ?)',
+                    [Telefono, Correo, Nombre, hashedPassword],
+                    function (err, result) {
+                        if (err) {
+                            console.log('Error al crear usuario: ' + err);
+                            return resp.status(500).send({
+                                success: false,
+                                message: 'Error al crear el usuario',
+                            });
+                        }
+
+                        return resp.status(201).send({
+                            success: true,
+                            message: 'Usuario creado exitosamente',
+                            userId: result.insertId,
+                        });
+                    }
+                );
+            });
+        }
+    });
+});
+
+
+// Endpoint para login
+router.post('/login', function (req, resp) {
+    const { usuario, password } = req.body; // Obtener usuario y contraseña del cuerpo de la solicitud
+
+    // Verificar si el usuario es un correo o un teléfono
+    const query = usuario.includes('@') ? 
+        'SELECT * FROM usuarios WHERE Correo = ?' : 
+        'SELECT * FROM usuarios WHERE Telefono = ?';
+
+    // Realizar la consulta a la base de datos
+    connection.query(query, [usuario], function (err, results) {
+        if (err) {
+            console.log('Error en la consulta de login: ' + err);
+            return resp.status(500).send({ success: false, message: 'Error en la consulta de login' });
+        }
+
+        if (results.length === 0) {
+            return resp.status(404).send({ success: false, message: 'Usuario no encontrado' });
+        }
+
+        const usuarioDB = results[0]; // Suponemos que solo hay un usuario por correo o teléfono
+
+        // Verificar la contraseña
+        bcrypt.compare(password, usuarioDB.Password, function (err, isMatch) {
+            if (err) {
+                console.log('Error al comparar la contraseña: ' + err);
+                return resp.status(500).send({ success: false, message: 'Error al verificar la contraseña' });
+            }
+
+            if (!isMatch) {
+                return resp.status(401).send({ success: false, message: 'Contraseña incorrecta' });
+            }
+
+            // Si las credenciales son correctas, devolver el usuario
+            resp.status(200).send({
+                success: true,
+                message: 'Inicio de sesión exitoso',
+                usuario: {
+                    Id: usuarioDB.Id,
+                    Telefono: usuarioDB.Telefono,
+                    Correo: usuarioDB.Correo,
+                    Nombre: usuarioDB.Nombre,
+                },
+            });
+        });
+    });
+});
+
+
 
 module.exports = router;

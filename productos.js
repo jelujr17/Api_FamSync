@@ -9,7 +9,7 @@ const fs = require('fs');
 
 // Configure SQL connection
 const connection = mysql.createConnection({
-    host: '172.27.147.244', //172.27.147.244 Cambia esto si tu base de datos está en un servidor remoto
+    host: '172.27.188.12', //172.27.147.244 Cambia esto si tu base de datos está en un servidor remoto
     user: 'root',           // Tu usuario de MySQL
     password: 'root',       // La contraseña de tu MySQL
     database: 'famsync' // El nombre de tu base de datos
@@ -20,18 +20,18 @@ const connection = mysql.createConnection({
 // Obtener todos los productos por usuario
 router.get('/getByUsuario', function (req, resp) {
     const IdUsuarioCreador = req.query.IdUsuarioCreador;
-    const IdPerfil = rew.query.IdPerfil;
-
+    const IdPerfil = req.query.IdPerfil;
+    console.log(IdUsuarioCreador + " mas " + IdPerfil);
     connection.query(
-        'SELECT * FROM productos WHERE IdUsuarioCreador = ? AND FIND_IN_SET(?, Visible)',
-        [IdUsuarioCreador, numeroVisible],
+        'SELECT * FROM productos WHERE IdUsuarioCreador = ? AND JSON_CONTAINS(Visible, ?)',
+    [IdUsuarioCreador, IdPerfil],
         function (err, rows) {
             if (err) {
                 console.log('Error en /get ' + err);
                 resp.status(500);
                 resp.send({ message: "Error al obtener los productos" });
             } else {
-                console.log('/getProductos');
+                console.log('/getProductos', rows);
                 resp.status(200);
                 resp.send(rows);
             }
