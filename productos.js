@@ -111,24 +111,29 @@ router.post('/update', async function (req, res) {
 });
 
 
-//Eliminar producto por Id
-router.post('/delete', function (req, res) {
+router.delete('/delete', function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    const Id = req.body.Id;
+    const IdProducto = req.body.IdProducto;
+
+    // Verificar que el IdProducto sea válido
+    if (!IdProducto) {
+        return res.status(400).send({ success: false, message: 'ID de producto no proporcionado' });
+    }
 
     connection.query(
-        'DELETE FROM productos WHERE Id = ?', [Id],
+        'DELETE FROM productos WHERE Id = ?', [IdProducto],
         function (err) {
             if (err) {
                 console.error('Error al eliminar un producto: ', err);
-                res.status(500).send({ success: false });
+                return res.status(500).send({ success: false, message: 'Error al eliminar el producto' });
             } else {
                 console.log('Producto eliminado correctamente');
-                res.status(200).send({ success: true });
+                return res.status(200).send({ success: true });
             }
         }
     );
 });
+
 
 
 // Configurar multer para manejar la carga de archivos
