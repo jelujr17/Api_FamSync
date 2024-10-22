@@ -19,19 +19,19 @@ const connection = mysql.createConnection({
 
 // Obtener todos los productos por usuario
 router.get('/getByUsuario', function (req, resp) {
-    const IdUsuarioCreador = req.query.IdUsuarioCreador;
+    const IdUsuario = req.query.IdUsuario;
     const IdPerfil = req.query.IdPerfil;
     console.log(IdUsuarioCreador + " mas " + IdPerfil);
     connection.query(
-        'SELECT * FROM productos WHERE IdUsuarioCreador = ? AND JSON_CONTAINS(Visible, ?)',
-    [IdUsuarioCreador, IdPerfil],
+        'SELECT * FROM listas WHERE IdUsuario = ? AND JSON_CONTAINS(Visible, ?)',
+        [IdUsuario, IdPerfil],
         function (err, rows) {
             if (err) {
                 console.log('Error en /get ' + err);
                 resp.status(500);
-                resp.send({ message: "Error al obtener los productos" });
+                resp.send({ message: "Error al obtener las listas" });
             } else {
-                console.log('/getProductos', rows);
+                console.log('/getListas', rows);
                 resp.status(200);
                 resp.send(rows);
             }
@@ -41,13 +41,13 @@ router.get('/getByUsuario', function (req, resp) {
 // Obtener producto por Id
 router.get('/getById', function (req, resp) {
     const Id = req.query.Id; // Cambiar a req.query.id
-    connection.query('SELECT * FROM productos WHERE Id = ?', [Id], function (err, producto) {
+    connection.query('SELECT * FROM listas WHERE Id = ?', [Id], function (err, lista) {
         if (err) {
             console.log('Error en /getById ' + err);
-            resp.status(500).send({ success: false, message: 'Error al obtener el perfil por Id' });
+            resp.status(500).send({ success: false, message: 'Error al obtener la lista por Id' });
         } else {
             if (producto.length === 0) {
-                resp.status(404).send({ success: false, message: 'Perfil no encontrado por Id' });
+                resp.status(404).send({ success: false, message: 'Lista no encontrado por Id' });
             } else {
                 const args = {
                     Id: producto[0].Id,
@@ -88,13 +88,14 @@ router.post('/create', function (req, res) {
 
 
 // Modificar Producto
-router.put('/update', function (req, res) {
+router.post('/update', async function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
     let { Id, Nombre, Imagenes, Tienda, Precio, Visible } = req.body;
 
-    // Actualizar el producto en la base de datos
+
+    // Actualizar el perfil en la base de datos
     connection.query(
-        'UPDATE productos SET Nombre = ?, Imagenes = ?, Tienda = ?, Precio = ?, Visible = ? WHERE Id = ?',
+        'UPDATE productos SET Nombre = ?, Imagenes = ?, Tienda = ?, Precio = ? Visible = ? WHERE Id = ?',
         [Nombre, Imagenes, Tienda, Precio, Visible, Id],
         function (err) {
             if (err) {
@@ -102,12 +103,11 @@ router.put('/update', function (req, res) {
                 res.status(500).send({ message: err + ' Error al editar el producto' });
             } else {
                 console.log('Producto editado correctamente');
-                res.status(200).send({ message: 'Producto actualizado correctamente' });
+                res.status(200).send({ message: 'Bien' });
             }
         }
     );
 });
-
 
 
 router.delete('/delete', function (req, res) {
