@@ -64,7 +64,7 @@ router.get('/getById', function (req, resp) {
 
 //Crear producto
 router.post('/create', function (req, res) {
-    let { Nombre, IdUsuario, IdPerfil, Visible } = req.body;
+    let { Nombre, IdUsuario, IdPerfil, Visible , Productos} = req.body;
 
 
 
