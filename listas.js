@@ -1,11 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
-var bp = require('body-parser');
-const crypto = require('node:crypto');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+var bp = require('body-parser');;
 
 // Configure SQL connection
 const connection = mysql.createConnection({
@@ -21,7 +17,6 @@ const connection = mysql.createConnection({
 router.get('/getByUsuario', function (req, resp) {
     const IdUsuario = req.query.IdUsuario;
     const IdPerfil = req.query.IdPerfil;
-    console.log(IdUsuarioCreador + " mas " + IdPerfil);
     connection.query(
         'SELECT * FROM listas WHERE IdUsuario = ? AND JSON_CONTAINS(Visible, ?)',
         [IdUsuario, IdPerfil],
@@ -52,12 +47,10 @@ router.get('/getById', function (req, resp) {
                 const args = {
                     Id: producto[0].Id,
                     Nombre: producto[0].Nombre,
-                    Imagenes: producto[0].Imagenes,
-                    Tienda: producto[0].Tienda,
-                    Precio: producto[0].Precio,
-                    IdPerfilCreador: producto[0].IdPerfilCreador,
-                    IdUsuarioCreador: producto[0].IdUsuarioCreador,
+                    IdUsuario: producto[0].IdUsuario,
+                    IdPerfil: producto[0].IdPerfil,
                     Visible: producto[0].Visible,
+                    Productos: productos[0].Productos
                 };
                 resp.status(200).send({
                     success: true,
@@ -71,16 +64,16 @@ router.get('/getById', function (req, resp) {
 
 //Crear producto
 router.post('/create', function (req, res) {
-    let { Nombre, Imagenes, Tienda, Precio, IdPerfilCreador, IdUsuarioCreador, Visible } = req.body;
+    let { Nombre, IdUsuario, IdPerfil, Visible } = req.body;
 
 
 
-    connection.query('INSERT INTO productos SET ?', { Nombre, Imagenes, Tienda, Precio, IdPerfilCreador, IdUsuarioCreador, Visible }, function (err) {
+    connection.query('INSERT INTO listas SET ?', { Nombre, IdUsuario, IdPerfil, Visible, Productos }, function (err) {
         if (err) {
-            console.error('Error al crear el producto: ', err);
-            res.status(500).send({ message: err + 'Error al crear el producto ' });
+            console.error('Error al crear la lista: ', err);
+            res.status(500).send({ message: err + 'Error al crear la lista ' });
         } else {
-            console.log('Producto creado correctamente');
+            console.log('Lista creada correctamente');
             res.status(200).send({ message: 'Bien' });
         }
     });
@@ -90,19 +83,19 @@ router.post('/create', function (req, res) {
 // Modificar Producto
 router.post('/update', async function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    let { Id, Nombre, Imagenes, Tienda, Precio, Visible } = req.body;
+    let { Id, Nombre, IdUsuario, IdPerfil, Visible, productos } = req.body;
 
 
     // Actualizar el perfil en la base de datos
     connection.query(
-        'UPDATE productos SET Nombre = ?, Imagenes = ?, Tienda = ?, Precio = ? Visible = ? WHERE Id = ?',
-        [Nombre, Imagenes, Tienda, Precio, Visible, Id],
+        'UPDATE listas SET Nombre = ?, IdUsuario = ?, IdPerfil = ?, Visible = ?, Productos = ? WHERE Id = ?',
+        [Nombre, IdUsuario, IdPerfil, Visible, Productos, Id],
         function (err) {
             if (err) {
-                console.error('Error al editar un producto: ', err);
-                res.status(500).send({ message: err + ' Error al editar el producto' });
+                console.error('Error al editar la lista: ', err);
+                res.status(500).send({ message: err + ' Error al editar la lista' });
             } else {
-                console.log('Producto editado correctamente');
+                console.log('Lista editada correctamente');
                 res.status(200).send({ message: 'Bien' });
             }
         }
@@ -112,74 +105,24 @@ router.post('/update', async function (req, res) {
 
 router.delete('/delete', function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    const IdProducto = req.body.IdProducto;
+    const IdLista = req.body.IdLista;
 
     // Verificar que el IdProducto sea válido
-    if (!IdProducto) {
-        return res.status(400).send({ success: false, message: 'ID de producto no proporcionado' });
+    if (!IdLista) {
+        return res.status(400).send({ success: false, message: 'ID de lista no proporcinado' });
     }
 
     connection.query(
-        'DELETE FROM productos WHERE Id = ?', [IdProducto],
+        'DELETE FROM listas WHERE Id = ?', [IdLista],
         function (err) {
             if (err) {
-                console.error('Error al eliminar un producto: ', err);
-                return res.status(500).send({ success: false, message: 'Error al eliminar el producto' });
+                console.error('Error al eliminar la lista: ', err);
+                return res.status(500).send({ success: false, message: 'Error al eliminar la lista' });
             } else {
-                console.log('Producto eliminado correctamente');
+                console.log('Lista eliminada correctamente');
                 return res.status(200).send({ success: true });
             }
         }
     );
 });
-
-
-
-// Configurar multer para manejar la carga de archivos
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'C:\\Users\\mario\\Documents\\Imagenes_FamSync\\Productos\\');
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname); // Utilizar el nombre original del archivo
-    }
-});
-const upload = multer({ storage: storage });
-
-// Ruta para cargar una imagen
-router.post('/uploadImagen', upload.single('imagen'), (req, res) => {
-    if (!req.file) {
-        // Si no se proporciona ninguna imagen, devuelve un error
-        res.status(400).json({ error: 'No se proporcionó ninguna imagen' });
-        return;
-    }
-
-    // Devuelve la URL de la imagen cargada
-    const imageUrl = path.basename(req.file.path);
-    res.status(200).json({ imageUrl: imageUrl });
-});
-
-router.post('/receiveFile', (req, res) => {
-    const fileName = req.body.fileName; // Obtener el nombre del archivo desde la solicitud
-
-    // Ruta completa del directorio de uploads
-    const uploadsDirectory = 'C:\\Users\\mario\\Documents\\Imagenes_FamSync\\Productos\\';
-
-    // Ruta completa del archivo a buscar
-    const filePath = path.join(uploadsDirectory, fileName);
-
-    // Verificar si el archivo existe
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
-            // Si el archivo no existe, devolver un error
-            res.status(404).json({ error: 'El archivo no existe' + filePath });
-            return;
-        }
-
-        // Si el archivo existe, enviarlo como respuesta
-        res.sendFile(filePath);
-    });
-});
-
-
 module.exports = router;
