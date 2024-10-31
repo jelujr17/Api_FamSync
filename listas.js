@@ -81,15 +81,15 @@ router.post('/create', function (req, res) {
 
 
 // Modificar Producto
-router.post('/update', async function (req, res) {
+router.put('/update', async function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    let { Id, Nombre, IdUsuario, IdPerfil, Visible, productos } = req.body;
+    let { Id, Nombre, Visible, Productos } = req.body;
 
 
     // Actualizar el perfil en la base de datos
     connection.query(
-        'UPDATE listas SET Nombre = ?, IdUsuario = ?, IdPerfil = ?, Visible = ?, Productos = ? WHERE Id = ?',
-        [Nombre, IdUsuario, IdPerfil, Visible, Productos, Id],
+        'UPDATE listas SET Nombre = ?, Visible = ?, Productos = ? WHERE Id = ?',
+        [Nombre, Visible, Productos, Id],
         function (err) {
             if (err) {
                 console.error('Error al editar la lista: ', err);
