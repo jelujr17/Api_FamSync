@@ -11,13 +11,13 @@ app.use(express.json());
 
 const usuariosRouter = require('./usuarios');
 const perfilesRouter = require('./perfiles');
-const productosRouter = require('./productos');
-const listasRouter = require('./listas');
-const tiendasRouter = require('./tiendas');
+const productosRouter = require('./Almacen/productos');
+const listasRouter = require('./Almacen/listas');
+const tiendasRouter = require('./Almacen/tiendas');
 
 // Configuración de la base de datos
 const db = mysql.createConnection({
-    host: '172.27.188.12', //172.27.147.244 Cambia esto si tu base de datos está en un servidor remoto
+    host: '192.168.0.105', //172.27.147.244 Cambia esto si tu base de datos está en un servidor remoto
     user: 'root',      // Tu usuario de MySQL
     password: 'root',      // La contraseña de tu MySQL
     database: 'famsync' // El nombre de tu base de datos
