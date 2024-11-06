@@ -10,6 +10,21 @@ const connection = mysql.createConnection({
     database: 'famsync' // El nombre de tu base de datos
 });
 
+// Obtener todos los usuarios
+router.get('/get', function (req, resp) {
+    connection.query('SELECT * FROM modulos', function (err, rows) {
+        if (err) {
+            console.log('Error en /get ' + err);
+            resp.status(500);
+            resp.send({ message: "Error al obtener los modulos" });
+        } else {
+            console.log('/get');
+            resp.status(200);
+            resp.send(rows);
+        }
+    });
+});
+
 
 // Obtener categoria por Id
 router.get('/getById', function (req, resp) {
