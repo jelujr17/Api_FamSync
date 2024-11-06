@@ -16,6 +16,7 @@ const listasRouter = require('./Almacen/listas');
 const tiendasRouter = require('./Almacen/tiendas');
 const eventosRouter = require('./Calendario/eventos');
 const categoriasRouter = require('./categorias');
+const modulosRouter = require('./modulos');
 
 // Configuración de la base de datos
 const db = mysql.createConnection({
@@ -40,6 +41,7 @@ app.use('/listas', listasRouter);
 app.use('/tiendas', tiendasRouter);
 app.use('/eventos', eventosRouter);
 app.use('/categorias', categoriasRouter);
+app.use('/modulos', modulosRouter);
 
 db.connect((err) => {
     if (err) {
