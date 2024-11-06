@@ -108,7 +108,7 @@ router.delete('/delete', function (req, res) {
     }
 
     connection.query(
-        'DELETE FROM productos WHERE Id = ?', [IdTienda],
+        'DELETE FROM productos WHERE Id = ?', [Id],
         function (err) {
             if (err) {
                 console.error('Error al eliminar una tienda: ', err);
