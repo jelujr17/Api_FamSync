@@ -31,6 +31,27 @@ router.get('/getByPerfil', function (req, resp) {
         });
 });
 
+// Obtener todos los productos por usuario
+router.get('/getByModulo', function (req, resp) {
+    const IdPerfil = req.query.IdPerfil;
+    const IdModulo = req.query.IdModulo;
+    connection.query(
+        'SELECT * FROM categorias WHERE IdPerfil = ? AND  IdModulo = ?',
+
+        [IdPerfil, IdModulo],
+        function (err, rows) {
+            if (err) {
+                console.log('Error en /get ' + err);
+                resp.status(500);
+                resp.send({ message: "Error al obtener las categorias por modulo" });
+            } else {
+                console.log('/getCategoriasByModulo', rows);
+                resp.status(200);
+                resp.send(rows);
+            }
+        });
+});
+
 // Obtener categoria por Id
 router.get('/getById', function (req, resp) {
     const Id = req.query.Id; // Cambiar a req.query.id
