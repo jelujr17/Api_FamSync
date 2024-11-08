@@ -59,6 +59,7 @@ router.get('/getById', function (req, resp) {
                     IdPerfilCreador: evento[0].IdPerfilCreador,
                     Visible: evento[0].Visible,
                     IdCategoria: evento[0].IdCategoria,
+                    Participantes: evento[0].Participantes
                 };
                 resp.status(200).send({
                     success: true,
@@ -72,11 +73,11 @@ router.get('/getById', function (req, resp) {
 
 //Crear evento
 router.post('/create', function (req, res) {
-    let { Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, Visible, IdCategoria } = req.body;
+    let { Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, Visible, IdCategoria, Participantes } = req.body;
 
 
 
-    connection.query('INSERT INTO eventos SET ?', { Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, Visible, IdCategoria }, function (err) {
+    connection.query('INSERT INTO eventos SET ?', { Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, Visible, IdCategoria, Participantes }, function (err) {
         if (err) {
             console.error('Error al crear el evento: ', err);
             res.status(500).send({ message: err + 'Error al crear el evento ' });
@@ -91,12 +92,12 @@ router.post('/create', function (req, res) {
 // Modificar Evento
 router.put('/update', function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    let { Id, Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, Visible, IdCategoria } = req.body;
+    let { Id, Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, Visible, IdCategoria, Participantes } = req.body;
 
     // Actualizar el evento en la base de datos
     connection.query(
-        'UPDATE productos SET Nombre = ?, Descripcion = ?, FechaInicio = ?, FechaFin = ?, IdUsuarioCreador = ?, IdPerfilCreador = ?,  Visible = ?, IdCategoria = ? WHERE Id = ?',
-        [Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, Visible, IdCategoria, Id],
+        'UPDATE productos SET Nombre = ?, Descripcion = ?, FechaInicio = ?, FechaFin = ?, IdUsuarioCreador = ?, IdPerfilCreador = ?,  Visible = ?, IdCategoria = ?, Participantes = ? WHERE Id = ?',
+        [Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, Visible, IdCategoria, Participantes, Id],
         function (err) {
             if (err) {
                 console.error('Error al editar un evento: ', err);
