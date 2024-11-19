@@ -14,10 +14,10 @@ const connection = mysql.createConnection({
 
 // Obtener todos los productos por usuario
 router.get('/getByPerfil', function (req, resp) {
-    const IdPerfil = req.query.IdPerfil;
+    const IdUsuario = req.query.IdUsuario;
     connection.query(
-        'SELECT * FROM categorias WHERE IdPerfil = ?',
-        [IdPerfil],
+        'SELECT * FROM categorias WHERE IdUsuario = ?',
+        [IdUsuario],
         function (err, rows) {
             if (err) {
                 console.log('Error en /get ' + err);
@@ -33,12 +33,12 @@ router.get('/getByPerfil', function (req, resp) {
 
 // Obtener todos los productos por usuario
 router.get('/getByModulo', function (req, resp) {
-    const IdPerfil = req.query.IdPerfil;
+    const IdUsuario = req.query.IdUsuario;
     const IdModulo = req.query.IdModulo;
     connection.query(
-        'SELECT * FROM categorias WHERE IdPerfil = ? AND  IdModulo = ?',
+        'SELECT * FROM categorias WHERE IdUsuario = ? AND  IdModulo = ?',
 
-        [IdPerfil, IdModulo],
+        [IdUsuario, IdModulo],
         function (err, rows) {
             if (err) {
                 console.log('Error en /get ' + err);
@@ -68,7 +68,7 @@ router.get('/getById', function (req, resp) {
                     IdModulo: categoria[0].IdModulo,
                     Color: categoria[0].Color,
                     Nombre: categoria[0].Nombre,
-                    IdPerfil: categoria[0].IdPerfil
+                    IdUsuario: categoria[0].IdUsuario
                 };
                 resp.status(200).send({
                     success: true,
@@ -82,11 +82,11 @@ router.get('/getById', function (req, resp) {
 
 //Crear producto
 router.post('/create', function (req, res) {
-    let { IdModulo, Color, Nombre, IdPerfil } = req.body;
+    let { IdModulo, Color, Nombre, IdUsuario } = req.body;
 
 
 
-    connection.query('INSERT INTO categorias SET ?', { IdModulo, Color, Nombre, IdPerfil }, function (err) {
+    connection.query('INSERT INTO categorias SET ?', { IdModulo, Color, Nombre, IdUsuario }, function (err) {
         if (err) {
             console.error('Error al crear la categoria: ', err);
             res.status(500).send({ message: err + 'Error al crear la categoria ' });
@@ -101,12 +101,12 @@ router.post('/create', function (req, res) {
 // Modificar categoria
 router.put('/update', function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    let { Id, IdModulo, Color, Nombre, IdPerfil } = req.body;
+    let { Id, IdModulo, Color, Nombre, IdUsuario } = req.body;
 
     // Actualizar la categoria en la base de datos
     connection.query(
-        'UPDATE categorias SET IdModulo = ?, Color = ?, Nombre = ?, IdPerfil = ? WHERE Id = ?',
-        [IdModulo, Color, Nombre, IdPerfil, Id],
+        'UPDATE categorias SET IdModulo = ?, Color = ?, Nombre = ?, IdUsuario = ? WHERE Id = ?',
+        [IdModulo, Color, Nombre, IdUsuario, Id],
         function (err) {
             if (err) {
                 console.error('Error al editar una categoria: ', err);
