@@ -95,7 +95,7 @@ router.put('/update', function (req, res) {
 
     // Actualizar el evento en la base de datos
     connection.query(
-        'UPDATE productos SET Nombre = ?, Descripcion = ?, FechaInicio = ?, FechaFin = ?, IdUsuarioCreador = ?, IdPerfilCreador = ?, IdCategoria = ?, Participantes = ? WHERE Id = ?',
+        'UPDATE eventos SET Nombre = ?, Descripcion = ?, FechaInicio = ?, FechaFin = ?, IdUsuarioCreador = ?, IdPerfilCreador = ?, IdCategoria = ?, Participantes = ? WHERE Id = ?',
         [Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, IdCategoria, Participantes, Id],
         function (err) {
             if (err) {
