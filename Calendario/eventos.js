@@ -116,7 +116,7 @@ router.delete('/delete', function (req, res) {
     const IdEvento = req.body.IdEvento;
 
     // Verificar que el IdProducto sea válido
-    if (!IdProducto) {
+    if (!IdEvento) {
         return res.status(400).send({ success: false, message: 'ID de evento no proporcionado' });
     }
 

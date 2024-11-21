@@ -55,7 +55,7 @@ router.get('/getByModulo', function (req, resp) {
 // Obtener categoria por Id
 router.get('/getById', function (req, resp) {
     const Id = req.query.Id; // Cambiar a req.query.id
-    connection.query('SELECT * FROM categorias WHERE Id = ?', [Id], function (err, tienda) {
+    connection.query('SELECT * FROM categorias WHERE Id = ?', [Id], function (err, categoria) {
         if (err) {
             console.log('Error en /getById ' + err);
             resp.status(500).send({ success: false, message: 'Error al obtener la categoria por Id' });
