@@ -38,6 +38,30 @@ router.get('/getByUsuario', function (req, resp) {
         });
 });
 
+// Obtener todos los eventos por usuario del día actual
+router.get('/getByUsuarioDiario', function (req, resp) {
+    const IdUsuarioCreador = req.query.IdUsuarioCreador;
+    const IdPerfil = req.query.IdPerfil;
+    console.log(IdUsuarioCreador + " más " + IdPerfil);
+
+    connection.query(
+        'SELECT * FROM eventos WHERE IdUsuarioCreador = ? AND JSON_CONTAINS(Participantes, ?) ' +
+        'AND CURDATE() BETWEEN DATE(fechaInicio) AND DATE(fechaFin)',
+        [IdUsuarioCreador, IdPerfil, IdPerfil],
+        function (err, rows) {
+            if (err) {
+                console.log('Error en /get ' + err);
+                resp.status(500);
+                resp.send({ message: "Error al obtener los eventos" });
+            } else {
+                console.log('/getEventos', rows);
+                resp.status(200);
+                resp.send(rows);
+            }
+        });
+});
+
+
 // Obtener evento por Id
 router.get('/getById', function (req, resp) {
     const Id = req.query.Id; // Cambiar a req.query.id
