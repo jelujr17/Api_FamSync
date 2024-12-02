@@ -9,7 +9,7 @@ const fs = require('fs');
 
 // Configure SQL connection
 const connection = mysql.createConnection({
-    host: '172.27.188.12', //172.27.147.244 192.168.0.105 Cambia esto si tu base de datos está en un servidor remoto
+    host: '127.0.0.1', //172.27.147.244 192.168.0.105 Cambia esto si tu base de datos está en un servidor remoto
     user: 'root',           // Tu usuario de MySQL
     password: 'root',       // La contraseña de tu MySQL
     database: 'famsync' // El nombre de tu base de datos
