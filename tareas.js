@@ -57,6 +57,7 @@ router.get('/getById', function (req, resp) {
                     Descripcion: tarea[0].Descripcion,
                     Estado: tarea[0].Estado,
                     Categoria: tarea[0].Categoria,
+                    IdEvento: tarea[0].IdEvento,
                 };
                 resp.status(200).send({
                     success: true,
@@ -70,11 +71,11 @@ router.get('/getById', function (req, resp) {
 
 //Crear Tarea
 router.post('/create', function (req, res) {
-    let { Creador, Destinatario, Nombre, Descripcion, Estado, Categoria } = req.body;
+    let { Creador, Destinatario, Nombre, Descripcion, Estado, Categoria, IdEvento, Prioridad } = req.body;
 
 
 
-    connection.query('INSERT INTO tareas SET ?', { Creador, Destinatario, Nombre, Descripcion, Estado, Categoria }, function (err) {
+    connection.query('INSERT INTO tareas SET ?', { Creador, Destinatario, Nombre, Descripcion, Estado, Categoria, IdEvento, Prioridad }, function (err, tarea) {
         if (err) {
             console.error('Error al crear la tarea: ', err);
             res.status(500).send({ message: err + 'Error al crear la tarea ' });
@@ -89,12 +90,12 @@ router.post('/create', function (req, res) {
 // Modificar tarea
 router.put('/update', function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    let { Id, Creador, Destinatario, Nombre, Descripcion, Estado, Categoria} = req.body;
+    let { Id, Creador, Destinatario, Nombre, Descripcion, Estado, Categoria, IdEvento, Prioridad} = req.body;
 
     // Actualizar la tarea en la base de datos
     connection.query(
-        'UPDATE tareas SET Creador = ?, Destinatario = ?, Nombre = ?, Descripcion = ?, Estado = ?, Categoria = ? WHERE Id = ?',
-        [Creador, Destinatario, Nombre, Descripcion, Estado, Categoria, Id],
+        'UPDATE tareas SET Creador = ?, Destinatario = ?, Nombre = ?, Descripcion = ?, Estado = ?, Categoria = ?, IdEvento = ?, Prioridad = ? WHERE Id = ?',
+        [Creador, Destinatario, Nombre, Descripcion, Estado, Categoria, IdEvento, Prioridad, Id],
         function (err) {
             if (err) {
                 console.error('Error al editar una tarea: ', err);
