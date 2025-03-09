@@ -1,7 +1,7 @@
 {
-  "name": "api_smart_family",
-  "version": "1.0.0",
-  "main": "smart_family.js",
+  "name": "api_famsync.js",
+  "version": "3.9.0",
+  "main": "famsync.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
