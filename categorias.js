@@ -11,14 +11,13 @@ const connection = mysql.createConnection({
 });
 
 
-
 // Obtener todos los productos por usuario
 router.get('/getByPerfil', function (req, resp) {
     const IdUsuario = req.query.IdUsuario;
     connection.query(
         'SELECT * FROM categorias WHERE IdUsuario = ?',
         [IdUsuario],
-        function (err, rows) {
+        function (err, rows) { 
             if (err) {
                 console.log('Error en /get ' + err);
                 resp.status(500);
