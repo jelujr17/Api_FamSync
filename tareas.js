@@ -95,8 +95,8 @@ router.put('/update', function (req, res) {
 
     // Actualizar la tarea en la base de datos
     connection.query(
-        'UPDATE tareas SET Creador = ?, Destinatario = ?, Nombre = ?, Descripcion = ?, Estado = ?, Categoria = ?, IdEvento = ?, Prioridad = ?, Progreso = ? WHERE Id = ?',
-        [Creador, Destinatario, Nombre, Descripcion, Estado, Categoria, IdEvento, Prioridad, Progreso, Id],
+        'UPDATE tareas SET Creador = ?, Destinatario = ?, Nombre = ?, Descripcion = ?, Categoria = ?, IdEvento = ?, Prioridad = ?, Progreso = ? WHERE Id = ?',
+        [Creador, Destinatario, Nombre, Descripcion, Categoria, IdEvento, Prioridad, Progreso, Id],
         function (err) {
             if (err) {
                 console.error('Error al editar una tarea: ', err);
