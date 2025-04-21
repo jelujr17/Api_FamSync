@@ -96,11 +96,11 @@ router.get('/getById', function (req, resp) {
 
 //Crear evento
 router.post('/create', function (req, res) {
-    let { Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, IdCategoria, Participantes, IdEvento } = req.body;
+    let { Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, IdCategoria, Participantes, IdTarea } = req.body;
 
 
 
-    connection.query('INSERT INTO eventos SET ?', { Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, IdCategoria, Participantes, IdEvento }, function (err) {
+    connection.query('INSERT INTO eventos SET ?', { Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, IdCategoria, Participantes, IdTarea }, function (err) {
         if (err) {
             console.error('Error al crear el evento: ', err);
             res.status(500).send({ message: err + 'Error al crear el evento ' });
@@ -115,12 +115,12 @@ router.post('/create', function (req, res) {
 // Modificar Evento
 router.put('/update', function (req, res) {
     // Extraer los datos del cuerpo de la solicitud
-    let { Id, Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, IdCategoria, Participantes, IdEvento } = req.body;
+    let { Id, Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, IdCategoria, Participantes, IdTarea } = req.body;
 
     // Actualizar el evento en la base de datos
     connection.query(
-        'UPDATE eventos SET Nombre = ?, Descripcion = ?, FechaInicio = ?, FechaFin = ?, IdUsuarioCreador = ?, IdPerfilCreador = ?, IdCategoria = ?, Participantes = ?, IdEvento = ? WHERE Id = ?',
-        [Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, IdCategoria, Participantes, IdEvento, Id],
+        'UPDATE eventos SET Nombre = ?, Descripcion = ?, FechaInicio = ?, FechaFin = ?, IdUsuarioCreador = ?, IdPerfilCreador = ?, IdCategoria = ?, Participantes = ?, IdTarea = ? WHERE Id = ?',
+        [Nombre, Descripcion, FechaInicio, FechaFin, IdUsuarioCreador, IdPerfilCreador, IdCategoria, Participantes, IdTarea, Id],
         function (err) {
             if (err) {
                 console.error('Error al editar un evento: ', err);
